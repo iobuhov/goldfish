@@ -1,5 +1,5 @@
 (defproject goldfish "0.1.0-SNAPSHOT"
-  :description "Goldfish is a card game that tries to mimic the well known game from Blizzard"
+  :description "Attempt to write online game in Clojure(Script)"
   :url "http://example.com/FIXME"
   :min-lein-version "2.5.3"
 
