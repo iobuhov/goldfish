@@ -3,7 +3,8 @@
 (defn unit [attack health]
   {:attack attack
    :health health
-   :damage 0})
+   :damage 0
+   :buffs  []})
 
 (defn damage [u points]
   (if (> points 0)
@@ -12,8 +13,6 @@
 
 (defn is-dead? [u]
   (>= (:damage u) (:health u)))
-
-(damage (damage (unit 1 10) 3) )
 
 (is-dead? (-> (unit 1 10)
               (damage 2)
@@ -40,10 +39,10 @@
   (update game-data :board conj x))
 
 (defn wolf []
-  (unit 2 2))
+  (assoc (unit 2 2) :name :wolf))
 
 (defn unicorn []
-  (unit 3 5))
+  (assoc (unit 3 5) :name :unicorn))
 
 (defn card-play
   [game player card]
@@ -51,4 +50,30 @@
     :wolf (update-in game [:data player] #(put-on-board % (wolf)))
     :unicorn (update-in game [:data player] #(put-on-board % (unicorn)))))
 
-(card-play game-state :Alice :wolf)
+(clojure.pprint/pprint (card-play game-state :Alice :wolf))
+
+;; ------------------------------------------------------------
+;;; Engine, Reflection, Rules
+
+(def rules [])
+
+(defn berserk [] (assoc (unit 2 4) :name :berserk))
+
+(defn berserk-rule-trigger
+  "Compare previous and next state of unit.
+  Return `true` if unit should gain bonus."
+  [prev next]
+  (apply < (mapv :damage [prev next])))
+
+(defn give-+1-attack[u]
+  "Give unit +1 attack bonus."
+  (update u :buffs conj {:attack {"+" 1}}))
+
+(def b1 (berserk))
+(def b2 (damage b1 2))
+
+;; 1. game-loop
+;; 2. recur?
+;; 3. narrow
+;;
+
