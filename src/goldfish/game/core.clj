@@ -55,11 +55,9 @@
 ;; ------------------------------------------------------------
 ;;; Engine, Reflection, Rules
 
-(def rules [])
-
 (defn berserk [] (assoc (unit 2 4) :name :berserk))
 
-(defn berserk-rule-trigger
+(defn took-damag?
   "Compare previous and next state of unit.
   Return `true` if unit should gain bonus."
   [prev next]
@@ -72,8 +70,18 @@
 (def b1 (berserk))
 (def b2 (damage b1 2))
 
+(def all-rules
+  {:berserk berserk-rule-trigger})
+
+(def state1 {:x      {:board []}
+             :y      {:board []}
+             :units  [:berserk]})
+(defn get-units [state]
+  (:units state))
+
+(defn pull-berserk)
 ;; 1. game-loop
 ;; 2. recur?
 ;; 3. narrow
 ;;
-
+;; (defn game-loop)
