@@ -17,7 +17,8 @@
    [environ                   "1.1.0"]
    [http-kit                  "2.4.0-alpha6"]
    [reagent                   "0.8.1"]
-   [hiccup                    "1.0.5"]]
+   [hiccup                    "1.0.5"]
+   [nano-id                   "0.10.0"]]
 
   :plugins
   [[cider/cider-nrepl "0.22.4"]
