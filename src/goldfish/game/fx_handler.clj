@@ -1,5 +1,5 @@
 (ns goldfish.game.fx-handler
-  (:require [goldfish.game.attack :refer [attack-handler]]))
+  (:require [goldfish.game.rules :refer [attack-handler]]))
 
 (defmulti handler (fn [fx s e] (:fn fx)))
 

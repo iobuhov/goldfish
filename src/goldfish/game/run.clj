@@ -1,31 +1,9 @@
 (ns goldfish.game.run
-  (:use [goldfish.game.attack])
   (:require
    [goldfish.game.core :refer [state add-unit]]
    [goldfish.game.unit :refer [wolf unicorn]]
    [goldfish.game.fx-handler :refer [handler] :rename {handler fx-handler}]
    [goldfish.game.events :as evs]))
-
-;; (defn fx-entry [t f]
-;;   {:id      (nano-id 5)
-;;    :fn      f
-;;    :trigger t})
-
-;; (defn event [n]
-;;   {:name      n
-;;    :executed-fxs #{}})
-
-;; (def boarding-event (event :boarding))
-;; (def attack-event   (event :attack))
-;; (def damage-event   (event :damage))
-
-;; (def berserk-fx1    (fx-entry :damage   :berserk-rage))
-;; (def juggler-fx1    (fx-entry :boarding :juggler-shoot))
-;; (def juggler-fx2    (fx-entry :boarding :juggler-shoot))
-
-
-;; (def state
-;;   {:effects [berserk-fx1 juggler-fx1 juggler-fx2]})
 
 (defn event?
   "Check weather provided map is event."
