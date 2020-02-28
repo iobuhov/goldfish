@@ -1,5 +1,6 @@
 (ns goldfish.game.run
   (:require
+   [goldfish.game.log-utils :as log]
    [goldfish.game.core :refer [state add-unit]]
    [goldfish.game.unit :refer [wolf unicorn]]
    [goldfish.game.fx-handler :refer [handler] :rename {handler fx-handler}]
@@ -51,27 +52,41 @@
    is event that marked as 'executed' for given `fx`."
   [(fx-handler fx st ev) (reg-runned-fx ev fx)])
 
-(defn run [state event]
-  (loop [s state ev-stack (list event)]
-    ;; (clojure.pprint/pprint )
+(defn run [state events]
+  (loop [s state ev-stack events]
     (if-let [ev (first ev-stack)]
       (do
-        (println "New" (:name (first ev-stack)) "event on the stack!")
+        ;; (println "New" (:name ev) "event on the stack!")
+        ;; (clojure.pprint/pprint ev)
         (if-let [fx (get-fx s ev)]
           (let [[fx-result after-event] (run-fx fx s ev)
                 [next-st  next-ev]      fx-result
                 next-stack              (conj (rest ev-stack) after-event)]
+            (Thread/sleep 500)
             (if next-ev
               (recur next-st (conj next-stack next-ev))
               (recur next-st next-stack)))
           (recur s (rest ev-stack))))
       (do
-        (println "Event stack is empty...")
-        (println "Return state:")
+        (log/spacer)
+        (println "Event stack is empty, finishing loop ...")
+        (log/spacer)
+        (println "Final state:")
+        (println)
         (clojure.pprint/pprint s)
         s))))
 
 ;; --------------------------------------------------
+
+;; (let [wx (wolf)
+;;       wy (wolf)
+;;       uc (unicorn)]
+;;   (run
+;;     (-> state
+;;         (add-unit wx)
+;;         (add-unit wy)
+;;         (add-unit uc))
+;;     (evs/attack :px (:id wx) (:id uc))))
 
 (let [wx (wolf)
       wy (wolf)
@@ -81,7 +96,8 @@
         (add-unit wx)
         (add-unit wy)
         (add-unit uc))
-    (evs/attack :px (:id wx) (:id uc))))
+    [(evs/attack :px (:id wx) (:id uc))
+     (evs/attack :px (:id wy) (:id uc))]))
 
 ;; --------------------------------------------------
 

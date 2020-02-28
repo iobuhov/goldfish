@@ -1,7 +1,10 @@
 (ns goldfish.game.unit
   (:require
    [nano-id.core :refer [nano-id]]
+   [nano-id.custom :refer [generate]]
    [goldfish.game.effects :as fx]))
+
+(def body-id (generate "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
 
 (defn body
   "Create map with basic unit attributes."
@@ -12,7 +15,7 @@
    :base-health health
    :damage      0
    :buffs       []
-   :id          (nano-id 10)})
+   :id          (body-id 5)})
 
 (defn add-buff
   "Attach buff to unit."
@@ -36,7 +39,7 @@
 
 (defn attack
   "Perform 'attack' on target unit."
-  [attacker target]
+  [target attacker]
   (damage target (:attack attacker)))
 
 (defn wolf []

@@ -16,3 +16,11 @@
    :executed-fxs #{}
    :units        {}
    :players      {}})
+
+(defn destroy
+  "Event that comes after unit(s) died and was removed
+  from the board. Includes payload with removed unit(s)."
+  [units]
+  {:name         :destroy
+   :executed-fxs #{}
+   :deads        units})
