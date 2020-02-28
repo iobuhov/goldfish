@@ -1,87 +1,81 @@
-(ns goldfish.game.core)
+(ns goldfish.game.core
+  (:require
+   [goldfish.game.unit :as unit]
+   [goldfish.game.effects :refer [fx-entry]]))
 
-(defn unit [attack health]
-  {:attack attack
-   :health health
-   :damage 0
-   :buffs  []})
+;; standard effects
+(def attack-fx (fx-entry :attack :attack-handler))
 
-(defn damage [u points]
-  (if (> points 0)
-    (update u :damage + points)
-    u))
+(def effects  [attack-fx])
+(def units    {})
+(def player-x {:uids #{}})
+(def player-y {:uids #{}})
 
-(defn is-dead? [u]
-  (>= (:damage u) (:health u)))
+(def state
+  {:effects effects
+   :units   units
+   :px      player-x
+   :py      player-y})
 
-(is-dead? (-> (unit 1 10)
-              (damage 2)
-              (damage 5)
-              (damage 4)))
+(defn attach-unit
+  "Attach unit to the player"
+  [s p uid]
+  (update-in s [p :uids] conj uid))
 
-(def state-a
-  {:player-id :Alice
-   :health 30
-   :board []})
+(defn detach-unit
+  "Remove unit from player's ownership"
+  [s p uid]
+  (update-in s [p :uids] disj uid))
 
-(def state-b
-  {:player-id :Bob
-   :health 30
-   :board []})
+(defn add-unit
+  "Add unit to game state"
+  [s u]
+  (update s :units assoc (:id u) u))
 
-(def game-state {:game-id :Alice-vs-Bob
-                 :players [:Alice :Bob]
-                 :data {:Alice state-a
-                        :Bob   state-b}})
+(defn remove-unit
+  "Remove unit from game state"
+  [s uid]
+  (update s :units dissoc uid))
 
-(defn put-on-board
-  [game-data x]
-  (update game-data :board conj x))
+(defn update-unit
+  "Update unit using provided function"
+  ([s uid f x] (update-in s [:units uid] f x))
+  ([s uid f x y] (update-in s [:units uid] f x y))
+  ([s uid f x y z] (update-in s [:units uid] f x y z)))
 
-(defn wolf []
-  (assoc (unit 2 2) :name :wolf))
+(defn get-unit
+  "Get unit by id."
+  [s uid]
+  (get-in s [:units uid]))
 
-(defn unicorn []
-  (assoc (unit 3 5) :name :unicorn))
+(defn put-unit
+  "'Put' unit on the 'board' and attach it to the player"
+  [s p u]
+  (-> s (add-unit u) (attach-unit p (:id u))))
 
-(defn card-play
-  [game player card]
-  (condp = card
-    :wolf (update-in game [:data player] #(put-on-board % (wolf)))
-    :unicorn (update-in game [:data player] #(put-on-board % (unicorn)))))
+(defn drop-unit
+  "Remove unit from state and player->unit relation"
+  [s p uid]
+  (-> s (remove-unit uid) (detach-unit p uid)))
 
-(clojure.pprint/pprint (card-play game-state :Alice :wolf))
-
+(defn unit-damage-change [s1 s2 uid]
+  (let [prev (get-unit s1 uid)
+        next (get-unit s2 uid)
+        amount (apply - (map :damage [next prev]))]
+    (println (:name next) "lost" amount "...")
+    {uid amount}))
 ;; ------------------------------------------------------------
-;;; Engine, Reflection, Rules
+;; (assign-unit state :px "fudnfd")
 
-(defn berserk [] (assoc (unit 2 4) :name :berserk))
+;; (put-unit state :px (unit/berserk))
+;; (put-unit state {:player :px :unit (unit/wolf)})
 
-(defn took-damag?
-  "Compare previous and next state of unit.
-  Return `true` if unit should gain bonus."
-  [prev next]
-  (apply < (mapv :damage [prev next])))
+;; (clojure.pprint/pprint (let [u   (unit/unicorn)
+;;                              uid (:id u)]
+;;                          [uid (get-in (-> state
+;;                                           (put-unit :px (unit/wolf))
+;;                                           (put-unit :px (unit/wolf))
+;;                                           (put-unit :px u)
+;;                                           (put-unit :px (unit/berserk))
+;;                                           (drop-unit :px uid)) [:px :uids])]))
 
-(defn give-+1-attack[u]
-  "Give unit +1 attack bonus."
-  (update u :buffs conj {:attack {"+" 1}}))
-
-(def b1 (berserk))
-(def b2 (damage b1 2))
-
-(def all-rules
-  {:berserk berserk-rule-trigger})
-
-(def state1 {:x      {:board []}
-             :y      {:board []}
-             :units  [:berserk]})
-(defn get-units [state]
-  (:units state))
-
-(defn pull-berserk)
-;; 1. game-loop
-;; 2. recur?
-;; 3. narrow
-;;
-;; (defn game-loop)
