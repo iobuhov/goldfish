@@ -4,21 +4,22 @@
   :min-lein-version "2.5.3"
 
   :dependencies
-  [[org.clojure/clojure       "1.10.0"]
-   [org.clojure/clojurescript "1.10.597"]
-   [org.clojure/core.async    "1.0.567"]
-   [org.clojure/tools.nrepl   "0.2.13"]
-   [com.taoensso/sente        "1.15.0"]
+  [[com.taoensso/sente        "1.15.0"]
    [com.taoensso/timbre       "4.10.0"]
-   [ring                      "1.8.0"]
-   [ring-cors                 "0.1.13"]
-   [ring/ring-defaults        "0.3.2"]
    [compojure                 "1.6.1"]
    [environ                   "1.1.0"]
-   [http-kit                  "2.4.0-alpha6"]
-   [reagent                   "0.8.1"]
    [hiccup                    "1.0.5"]
-   [nano-id                   "0.10.0"]]
+   [http-kit                  "2.4.0-alpha6"]
+   [nano-id                   "0.10.0"]
+   [org.clojure/clojure       "1.10.0"]
+   [org.clojure/clojurescript "1.10.597"]
+   [org.clojure/core.async    "1.0.567"]
+   [org.clojure/test.check    "1.0.0"]
+   [org.clojure/tools.nrepl   "0.2.13"]
+   [reagent                   "0.8.1"]
+   [ring                      "1.8.0"]
+   [ring-cors                 "0.1.13"]
+   [ring/ring-defaults        "0.3.2"]]
 
   :plugins
   [[cider/cider-nrepl "0.22.4"]
