@@ -8,10 +8,13 @@
    [goldfish.game.unit :as unit]))
 
 
+(def no-zero-nat
+  (gen/fmap inc gen/nat))
+
 (def unit-stats
   (gen/tuple
    gen/nat
-   (gen/fmap inc gen/nat)))
+   no-zero-nat))
 
 (comment
   (gen/sample unit-stats))
@@ -27,6 +30,14 @@
 (def body-set
   (gen/vector bodies 1 100))
 
+(def hp-dmg
+  (gen/fmap
+   sort
+   (gen/tuple no-zero-nat no-zero-nat)))
+
+(comment
+  (gen/sample hp-dmg))
+
 (defspec body-is-pure-fn 100
   (prop/for-all
    [[a h] unit-stats]
@@ -41,6 +52,13 @@
    [bs body-set]
    (= (count bs)
       (count (set (map :id bs))))))
+
+(defspec dead-if-damage-greater-then-health 100
+  (prop/for-all
+   [[h d] hp-dmg]
+   (-> (unit/body h h)
+       (unit/damage d)
+       (unit/is-dead?))))
 
 (comment
   (count (set [1 2 3])))
