@@ -1,0 +1,46 @@
+(ns goldfish.unit-test
+  (:require
+   [clojure.test :refer :all]
+   [clojure.test.check :as tc]
+   [clojure.test.check.generators :as gen]
+   [clojure.test.check.properties :as prop]
+   [clojure.test.check.clojure-test :refer [defspec]]
+   [goldfish.game.unit :as unit]))
+
+
+(def unit-stats
+  (gen/tuple
+   gen/nat
+   (gen/fmap inc gen/nat)))
+
+(comment
+  (gen/sample unit-stats))
+
+(def bodies
+  (gen/fmap
+   (fn [[a h]] (unit/body a h))
+   unit-stats))
+
+(comment
+  (gen/sample bodies))
+
+(def body-set
+  (gen/vector bodies 1 100))
+
+(defspec body-is-pure-fn 100
+  (prop/for-all
+   [[a h] unit-stats]
+   (let [b (unit/body a h)]
+     (and (= (:attack b) a)
+          (= (:health b) h)
+          (= (:base-attack b) a)
+          (= (:base-health b) h)))))
+
+(defspec all-units-are-distinct 100
+  (prop/for-all
+   [bs body-set]
+   (= (count bs)
+      (count (set (map :id bs))))))
+
+(comment
+  (count (set [1 2 3])))
